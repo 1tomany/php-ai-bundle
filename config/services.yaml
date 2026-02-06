@@ -3,11 +3,11 @@ services:
         autowire: true
         autoconfigure: true
 
-    # OneToMany / PHP AI Bundle
+    # Client Factory
     OneToMany\AI\Factory\ClientFactory:
         abstract: true
 
-    # OneToMany / PHP AI Bundle / Files / Actions
+    # File Actions
     OneToMany\AI\Contract\Action\File\UploadFileActionInterface:
         alias: OneToMany\AI\Action\File\UploadFileAction
 
@@ -15,13 +15,13 @@ services:
         arguments:
             $clientFactory: '@OneToMany\AI\Factory\FileClientFactory'
 
-    # OneToMany / PHP AI Bundle / Files / Clients
+    # File Clients
     OneToMany\AI\Factory\FileClientFactory:
         class: OneToMany\AI\Factory\ClientFactory
         arguments:
             $clients: !tagged_iterator { tag: 1tomany.ai.file_client }
 
-    # OneToMany / PHP AI Bundle / Queries / Actions
+    # Query Actions
     OneToMany\AI\Contract\Action\Query\CompileQueryActionInterface:
         alias: OneToMany\AI\Action\Query\CompileQueryAction
 
@@ -36,8 +36,18 @@ services:
         arguments:
             $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
 
-    # OneToMany / PHP AI Bundle / Queries / Clients
+    # Query Clients
     OneToMany\AI\Factory\QueryClientFactory:
         class: OneToMany\AI\Factory\ClientFactory
         arguments:
             $clients: !tagged_iterator { tag: 1tomany.ai.query_client }
+
+when@test:
+     services:
+        # File Clients
+        OneToMany\AI\Client\Mock\FileClient:
+             tags: [1tomany.ai.file_client]
+
+        # Query Clients
+        OneToMany\AI\Client\Mock\QueryClient:
+            tags: [1tomany.ai.query_client]

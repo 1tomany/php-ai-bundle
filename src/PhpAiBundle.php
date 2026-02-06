@@ -15,28 +15,31 @@ class PhpAiBundle extends AbstractBundle
 {
     public function configure(DefinitionConfigurator $definition): void
     {
-        $definition->rootNode()
-            ->children()
-                ->arrayNode('gemini')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('api_key')
-                            ->isRequired()
-                            ->cannotBeEmpty()
+        /**
+         * @disregard P1013 Undefined method
+         */
+        $definition
+            ->rootNode()
+                ->children()
+                    ->arrayNode('gemini')
+                        ->canBeEnabled()
+                        ->children()
+                            ->scalarNode('api_key')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
                         ->end()
                     ->end()
-                ->end()
-                ->arrayNode('openai')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('api_key')
-                            ->isRequired()
-                            ->cannotBeEmpty()
+                    ->arrayNode('openai')
+                        ->canBeEnabled()
+                        ->children()
+                            ->scalarNode('api_key')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                            ->end()
                         ->end()
                     ->end()
-                ->end()
-            ->end()
-        ;
+                ->end();
     }
 
     /**
@@ -53,7 +56,7 @@ class PhpAiBundle extends AbstractBundle
         //     ->addTag('1tomany.ai.query_client');
 
         if ($config['gemini']['enabled']) {
-            $definition = $builder->register(GeminiFileClient::class, GeminiFileClient::class);
+            $definition = $builder->register(GeminiFileClient::class);
 
             $definition
                 ->setAutoconfigured(true)
@@ -63,7 +66,7 @@ class PhpAiBundle extends AbstractBundle
         }
 
         if ($config['openai']['enabled']) {
-            $builder->register(OpenAiFileClient::class, OpenAiFileClient::class)
+            $builder->register(OpenAiFileClient::class)
                 ->setArgument('$apiKey', $config['openai']['api_key'])
                 ->setAutoconfigured(true)
                 ->setAutowired(true)
