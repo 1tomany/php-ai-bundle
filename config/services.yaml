@@ -1,6 +1,6 @@
 parameters:
-    env(GEMINI_API_KEY): null
-    env(OPENAI_API_KEY): null
+    # env(GEMINI_API_KEY): null
+    # env(OPENAI_API_KEY): null
 
 services:
     _defaults:
@@ -13,43 +13,35 @@ services:
             $fileClientFactory: '@OneToMany\AI\Factory\FileClientFactory'
 
     OneToMany\AI\Contract\Action\File\CacheFileActionInterface:
-        alias: '@OneToMany\AI\Action\File\CacheFileAction'
+        alias: OneToMany\AI\Action\File\CacheFileAction
 
     # OneToMany / AI / Files / Clients
     OneToMany\AI\Factory\FileClientFactory:
         arguments:
-            $clients: !tagged_locator { tag: 1tomany.ai.clients.file_client, index_by: key }
+            $clients: !tagged_locator { tag: 1tomany.ai.clients.file_client, default_index_method: 'getVendor' }
 
     OneToMany\AI\Client\Gemini\FileClient:
         arguments:
-            $geminiApiKey: '%env(GEMINI_API_KEY)%'
-        tags:
-            - { name: 1tomany.ai.clients.file_client, key: gemini }
-
-    OneToMany\AI\Client\Mock\FileClient:
-        tags:
-            - { name: 1tomany.ai.clients.file_client, key: mock }
+            $geminiApiKey: '%env(default::GEMINI_API_KEY)%'
 
     OneToMany\AI\Client\OpenAi\FileClient:
         arguments:
-            $geminiApiKey: '%env(OPENAI_API_KEY)%'
-        tags:
-            - { name: 1tomany.ai.clients.file_client, key: openai }
+            $openaiApiKey: '%env(default::OPENAI_API_KEY)%'
 
     # OneToMany / AI / Prompts / Actions
     OneToMany\AI\Action\Prompt\CompilePromptAction:
         arguments:
             $promptClientFactory: '@OneToMany\AI\Factory\PromptClientFactory'
 
-    OneToMany\AI\Action\Prompt\SendPromptAction:
+    OneToMany\AI\Action\Prompt\DispatchPromptAction:
         arguments:
             $promptClientFactory: '@OneToMany\AI\Factory\PromptClientFactory'
 
     OneToMany\AI\Contract\Action\Prompt\CompilePromptActionInterface:
-        alias: '@OneToMany\AI\Action\Prompt\CompilePromptAction'
+        alias: OneToMany\AI\Action\Prompt\CompilePromptAction
 
     OneToMany\AI\Contract\Action\Prompt\DispatchPromptActionInterface:
-        alias: '@OneToMany\AI\Action\Prompt\DispatchPromptAction'
+        alias: OneToMany\AI\Action\Prompt\DispatchPromptAction
 
     # OneToMany / AI / Prompts / Clients
     OneToMany\AI\Factory\PromptClientFactory:
@@ -58,7 +50,7 @@ services:
 
     OneToMany\AI\Client\Gemini\PromptClient:
         arguments:
-            $geminiApiKey: '%env(GEMINI_API_KEY)%'
+            $geminiApiKey: '%env(default::GEMINI_API_KEY)%'
         tags:
             - { name: 1tomany.ai.clients.prompt_client, key: gemini }
 
