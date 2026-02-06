@@ -1,17 +1,13 @@
-parameters:
-    # env(GEMINI_API_KEY): null
-    # env(OPENAI_API_KEY): null
-
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    # OneToMany / AI
+    # OneToMany / PHP AI Bundle
     OneToMany\AI\Factory\ClientFactory:
         abstract: true
 
-    # OneToMany / AI / Files / Actions
+    # OneToMany / PHP AI Bundle / Files / Actions
     OneToMany\AI\Contract\Action\File\UploadFileActionInterface:
         alias: OneToMany\AI\Action\File\UploadFileAction
 
@@ -19,13 +15,13 @@ services:
         arguments:
             $clientFactory: '@OneToMany\AI\Factory\FileClientFactory'
 
-    # OneToMany / AI / Files / Clients
+    # OneToMany / PHP AI Bundle / Files / Clients
     OneToMany\AI\Factory\FileClientFactory:
         class: OneToMany\AI\Factory\ClientFactory
         arguments:
             $clients: !tagged_iterator { tag: 1tomany.ai.file_client }
 
-    # OneToMany / AI / Queries / Actions
+    # OneToMany / PHP AI Bundle / Queries / Actions
     OneToMany\AI\Contract\Action\Query\CompileQueryActionInterface:
         alias: OneToMany\AI\Action\Query\CompileQueryAction
 
@@ -40,7 +36,7 @@ services:
         arguments:
             $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
 
-    # OneToMany / AI / Queries / Clients
+    # OneToMany / PHP AI Bundle / Queries / Clients
     OneToMany\AI\Factory\QueryClientFactory:
         class: OneToMany\AI\Factory\ClientFactory
         arguments:

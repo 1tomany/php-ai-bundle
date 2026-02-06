@@ -8,6 +8,7 @@
     "require": {
         "php": ">=8.4",
         "1tomany/php-ai": "^0.0.5",
+        "symfony/config": "^7.2|^8.0",
         "symfony/dependency-injection": "^7.2|^8.0",
         "symfony/http-kernel": "^7.2|^8.0"
     },
@@ -18,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "OneToMany\\AiBundle\\": "src/"
+            "OneToMany\\PhpAiBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OneToMany\\AiBundle\\Tests\\": "tests/"
+            "OneToMany\\PhpAiBundle\\Tests\\": "tests/"
         }
     },
     "scripts": {
