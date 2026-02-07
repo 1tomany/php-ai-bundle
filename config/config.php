@@ -15,6 +15,7 @@ $configurator = static function (DefinitionConfigurator $configurator): void {
         ->rootNode()
             ->children()
                 ->append($append('gemini'))
+                ->append($append('mock'))
                 ->append($append('openai'))
             ->end()
         ->end();
