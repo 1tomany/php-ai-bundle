@@ -8,6 +8,7 @@ use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
  */
 return static function (DefinitionConfigurator $configurator): void {
     $append = function (string $vendor): ArrayNodeDefinition {
+        /** @var ArrayNodeDefinition */
         return require __DIR__.'/vendor/'.$vendor.'.php';
     };
 
