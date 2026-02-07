@@ -2,97 +2,58 @@
 
 namespace OneToMany\PhpAiBundle;
 
-use OneToMany\AI\Contract\Client\FileClientInterface;
-use OneToMany\AI\Contract\Client\QueryClientInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class PhpAiBundle extends AbstractBundle
 {
     /**
-     * @var array{
-     *   gemini: non-empty-list<class-string>,
-     *   openai: non-empty-list<class-string>,
-     * }
+     * @param DefinitionConfigurator<'array'> $definition
      */
-    private array $clients = [
-        'gemini' => [
-            \OneToMany\AI\Client\Gemini\FileClient::class,
-            \OneToMany\AI\Client\Gemini\QueryClient::class,
-        ],
-        'openai' => [
-            \OneToMany\AI\Client\OpenAi\FileClient::class,
-            \OneToMany\AI\Client\OpenAi\QueryClient::class,
-        ],
-    ];
-
     public function configure(DefinitionConfigurator $definition): void
     {
-        /**
-         * @disregard P1013 Undefined method rootNode()
-         */
-        $definition
-            ->rootNode()
-                ->children()
-                    ->arrayNode('gemini')
-                        ->canBeEnabled()
-                        ->children()
-                            ->scalarNode('api_key')
-                                ->isRequired()
-                                ->cannotBeEmpty()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('openai')
-                        ->canBeEnabled()
-                        ->children()
-                            ->scalarNode('api_key')
-                                ->isRequired()
-                                ->cannotBeEmpty()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end();
+        $definition->import('../config/config.php');
     }
 
     /**
      * @param array{
-     *   gemini: array{
-     *     api_key?: non-empty-string,
+     *   gemini?: array{
+     *     api_key: non-empty-string,
      *     enabled: bool,
      *   },
-     *   openai: array{
-     *     api_key?: non-empty-string,
+     *   openai?: array{
+     *     api_key: non-empty-string,
      *     enabled: bool,
      *   }
      * } $config
      */
-    public function loadExtension(array $config, ContainerConfigurator $configurator, ContainerBuilder $builder): void
+    public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        $builder
-            ->registerForAutoconfiguration(FileClientInterface::class)
-            ->addTag('1tomany.ai.file_client');
+        $container->import('../config/services.php');
 
-        $builder
-            ->registerForAutoconfiguration(QueryClientInterface::class)
-            ->addTag('1tomany.ai.query_client');
+        $clients = ['file', 'query'];
 
-        foreach ($config as $platform => $settings) {
-            $apiKey = $settings['api_key'] ?? null;
+        foreach ($config as $vendor => $vendorConfig) {
+            foreach ($clients as $client) {
+                $id = sprintf('php_ai.client.%s.%s', $vendor, $client);
 
-            if ($settings['enabled'] && null !== $apiKey) {
-                foreach ($this->clients[$platform] as $clientClass) {
-                    $builder
-                        ->register($clientClass)
-                        ->setAutowired(true)
-                        ->setAutoconfigured(true)
-                        ->setArgument('$apiKey', $apiKey);
+                if ($builder->has($id)) {
+                    if (!$vendorConfig['enabled']) {
+                        $builder->removeDefinition($id);
+                    } else {
+
+                        $builder
+                            ->getDefinition($id)
+                            ->setArgument('$apiKey', $vendorConfig['api_key'])
+                            ->setArgument('$httpClient', new Reference($vendorConfig['http_client']))
+                            ->setArgument('$serializer', new Reference($vendorConfig['serializer']));
+                    }
                 }
             }
         }
-
-        $configurator->import('../config/services.yaml');
     }
 }

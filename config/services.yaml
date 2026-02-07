@@ -1,53 +1,51 @@
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
+    # _defaults:
+    #     autowire: true
+    #     autoconfigure: true
 
     # Client Factory
-    OneToMany\AI\Factory\ClientFactory:
-        abstract: true
+    # OneToMany\AI\Factory\ClientFactory:
+    #     abstract: true
 
     # File Actions
-    OneToMany\AI\Contract\Action\File\UploadFileActionInterface:
-        alias: OneToMany\AI\Action\File\UploadFileAction
+    # OneToMany\AI\Contract\Action\File\UploadFileActionInterface:
+    #     alias: OneToMany\AI\Action\File\UploadFileAction
 
-    OneToMany\AI\Action\File\UploadFileAction:
-        arguments:
-            $clientFactory: '@OneToMany\AI\Factory\FileClientFactory'
+    # OneToMany\AI\Action\File\UploadFileAction:
+    #     arguments:
+    #         $clientFactory: '@OneToMany\AI\Factory\FileClientFactory'
 
     # File Clients
-    OneToMany\AI\Factory\FileClientFactory:
-        class: OneToMany\AI\Factory\ClientFactory
-        arguments:
-            $clients: !tagged_iterator { tag: 1tomany.ai.file_client }
+    # OneToMany\AI\Factory\FileClientFactory:
+    #     class: OneToMany\AI\Factory\ClientFactory
+    #     arguments:
+    #         $clients: !tagged_iterator { tag: 1tomany.php_ai.file_client }
 
     # Query Actions
-    OneToMany\AI\Contract\Action\Query\CompileQueryActionInterface:
-        alias: OneToMany\AI\Action\Query\CompileQueryAction
+    # OneToMany\AI\Contract\Action\Query\CompileQueryActionInterface:
+    #     alias: OneToMany\AI\Action\Query\CompileQueryAction
 
-    OneToMany\AI\Contract\Action\Query\ExecuteQueryActionInterface:
-        alias: OneToMany\AI\Action\Query\ExecuteQueryAction
+    # OneToMany\AI\Contract\Action\Query\ExecuteQueryActionInterface:
+    #     alias: OneToMany\AI\Action\Query\ExecuteQueryAction
 
-    OneToMany\AI\Action\Query\CompileQueryAction:
-        arguments:
-            $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
+    # OneToMany\AI\Action\Query\CompileQueryAction:
+    #     arguments:
+    #         $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
 
-    OneToMany\AI\Action\Query\ExecuteQueryAction:
-        arguments:
-            $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
+    # OneToMany\AI\Action\Query\ExecuteQueryAction:
+    #     arguments:
+    #         $clientFactory: '@OneToMany\AI\Factory\QueryClientFactory'
 
-    # Query Clients
-    OneToMany\AI\Factory\QueryClientFactory:
-        class: OneToMany\AI\Factory\ClientFactory
-        arguments:
-            $clients: !tagged_iterator { tag: 1tomany.ai.query_client }
+    # # Query Clients
+    # OneToMany\AI\Factory\QueryClientFactory:
+    #     class: OneToMany\AI\Factory\ClientFactory
+    #     arguments:
+    #         $clients: !tagged_iterator { tag: php_ai.client.queryt }
 
-when@test:
-     services:
-        # File Clients
-        OneToMany\AI\Client\Mock\FileClient:
-             tags: [1tomany.ai.file_client]
+# when@test:
+#      services:
+#         # Mock Clients
+#         OneToMany\AI\Client\Mock\FileClient:
+#             tags: [php_ai.action.file.upload]
 
-        # Query Clients
-        OneToMany\AI\Client\Mock\QueryClient:
-            tags: [1tomany.ai.query_client]
+#         OneToMany\AI\Client\Mock\QueryClient:
