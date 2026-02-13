@@ -30,6 +30,12 @@ class PhpAiBundle extends AbstractBundle
 
     /**
      * @param array{
+     *   claude: array{
+     *     api_key: non-empty-string,
+     *     enabled: bool,
+     *     http_client: non-empty-string,
+     *     serializer: non-empty-string,
+     *   },
      *   gemini: array{
      *     api_key: non-empty-string,
      *     enabled: bool,
@@ -75,7 +81,7 @@ class PhpAiBundle extends AbstractBundle
                     }
 
                     if ($serializer = $vendorConfig['serializer'] ?? null) {
-                        $definition->setArgument('$serializer', new Reference($serializer));
+                        $definition->setArgument('$denormalizer', new Reference($serializer));
                     }
                 }
             }

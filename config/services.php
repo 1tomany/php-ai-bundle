@@ -4,6 +4,7 @@ use OneToMany\AI\Action\File\DeleteFileAction;
 use OneToMany\AI\Action\File\UploadFileAction;
 use OneToMany\AI\Action\Query\CompileQueryAction;
 use OneToMany\AI\Action\Query\ExecuteQueryAction;
+use OneToMany\AI\Client\Claude\FileClient as ClaudeFileClient;
 use OneToMany\AI\Client\Gemini\FileClient as GeminiFileClient;
 use OneToMany\AI\Client\Gemini\QueryClient as GeminiQueryClient;
 use OneToMany\AI\Client\Mock\FileClient as MockFileClient;
@@ -40,6 +41,8 @@ return static function (ContainerConfigurator $container): void {
                 ->arg('$clientFactory', service('php_ai.factory.client.file'))
 
             // File Clients
+            ->set('php_ai.client.claude.file', ClaudeFileClient::class)
+                ->tag('php_ai.client.file')
             ->set('php_ai.client.gemini.file', GeminiFileClient::class)
                 ->tag('php_ai.client.file')
             ->set('php_ai.client.mock.file', MockFileClient::class)
