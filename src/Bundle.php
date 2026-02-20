@@ -57,7 +57,7 @@ class Bundle extends AbstractBundle
 
         foreach ($config as $vendor => $vendorConfig) {
             foreach ($this->clients as $idx => $client) {
-                $id = "php_ai.client.{$vendor}.{$client}";
+                $id = "1tomany.ai.clients.client.{$vendor}.{$client}";
 
                 if (!$builder->has($id)) {
                     continue;
