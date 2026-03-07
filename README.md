@@ -49,6 +49,10 @@ onetomany_llmsdk:
 
 You'll also have to define the API keys in your `.env` file or by using the [Symfony Secrets](https://symfony.com/doc/current/configuration/secrets.html) component.
 
+## Commands
+
+- `onetomany:llm-sdk:list-models` console command to list all available models by LLM client
+
 ## Usage
 
 Any action interface can be injected into a service. Because you can have multiple clients loaded in at once, the model passed into the request dictates what client to use. This makes it very easy to allow your users to select amongst any client supported by the core `1tomany/llm-sdk` library.
