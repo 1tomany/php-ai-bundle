@@ -8,30 +8,17 @@ use OneToMany\LlmSdk\Action\File\DeleteFileAction;
 use OneToMany\LlmSdk\Action\File\UploadFileAction;
 use OneToMany\LlmSdk\Action\Query\CompileQueryAction;
 use OneToMany\LlmSdk\Action\Query\ExecuteQueryAction;
-use OneToMany\LlmSdk\Client\Anthropic\BaseClient as AnthropicBaseClient;
-use OneToMany\LlmSdk\Client\Anthropic\BatchClient as AnthropicBatchClient;
-use OneToMany\LlmSdk\Client\Anthropic\FileClient as AnthropicFileClient;
-use OneToMany\LlmSdk\Client\Gemini\BaseClient as GeminiBaseClient;
-use OneToMany\LlmSdk\Client\Gemini\BatchClient as GeminiBatchClient;
-use OneToMany\LlmSdk\Client\Gemini\FileClient as GeminiFileClient;
-use OneToMany\LlmSdk\Client\Gemini\QueryClient as GeminiQueryClient;
-use OneToMany\LlmSdk\Client\Mock\BaseClient as MockBaseClient;
-use OneToMany\LlmSdk\Client\Mock\BatchClient as MockBatchClient;
-use OneToMany\LlmSdk\Client\Mock\FileClient as MockFileClient;
-use OneToMany\LlmSdk\Client\Mock\QueryClient as MockQueryClient;
-use OneToMany\LlmSdk\Client\OpenAi\BaseClient as OpenAiBaseClient;
-use OneToMany\LlmSdk\Client\OpenAi\BatchClient as OpenAiBatchClient;
-use OneToMany\LlmSdk\Client\OpenAi\FileClient as OpenAiFileClient;
-use OneToMany\LlmSdk\Client\OpenAi\QueryClient as OpenAiQueryClient;
+use OneToMany\LlmSdk\Client\Anthropic\AnthropicClient;
+use OneToMany\LlmSdk\Client\Gemini\GeminiClient;
+use OneToMany\LlmSdk\Client\Mock\MockClient;
+use OneToMany\LlmSdk\Client\OpenAi\OpenAiClient;
 use OneToMany\LlmSdk\Contract\Action\Batch\CreateBatchActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Batch\ReadBatchActionInterface;
 use OneToMany\LlmSdk\Contract\Action\File\DeleteFileActionInterface;
 use OneToMany\LlmSdk\Contract\Action\File\UploadFileActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Query\CompileQueryActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Query\ExecuteQueryActionInterface;
-use OneToMany\LlmSdk\Factory\BatchClientFactory;
-use OneToMany\LlmSdk\Factory\FileClientFactory;
-use OneToMany\LlmSdk\Factory\QueryClientFactory;
+use OneToMany\LlmSdk\Factory\ClientFactory;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -119,11 +106,13 @@ class LlmSdkBundle extends AbstractBundle
      * @param array{
      *   anthropic: array{
      *     api_key: non-empty-string,
+     *     api_version: non-empty-string,
      *     http_client: non-empty-string,
      *     serializer: non-empty-string,
      *   },
      *   gemini: array{
      *     api_key: non-empty-string,
+     *     api_version: non-empty-string,
      *     http_client: non-empty-string,
      *     serializer: non-empty-string,
      *   },
@@ -139,94 +128,53 @@ class LlmSdkBundle extends AbstractBundle
         $container
             ->services()
                 // Factories
-                ->set(BatchClientFactory::class)
-                    ->arg('$clients', tagged_iterator('onetomany.llmsdk.client.batch'))
-                ->set(FileClientFactory::class)
-                    ->arg('$clients', tagged_iterator('onetomany.llmsdk.client.file'))
-                ->set(QueryClientFactory::class)
-                    ->arg('$clients', tagged_iterator('onetomany.llmsdk.client.query'))
+                ->set(ClientFactory::class)
+                    ->arg('$clients', tagged_iterator('onetomany.llmsdk.client'))
 
-                // Base Clients
-                ->set(AnthropicBaseClient::class)
-                    ->abstract(true)
-                    ->arg('$apiKey', $config['anthropic']['api_key'])
+                // Clients
+                ->set(AnthropicClient::class)
+                    ->tag('onetomany.llmsdk.client')
                     ->arg('$httpClient', service($config['anthropic']['http_client']))
                     ->arg('$denormalizer', service($config['anthropic']['serializer']))
-                ->set(GeminiBaseClient::class)
-                    ->abstract(true)
-                    ->arg('$apiKey', $config['gemini']['api_key'])
+                    ->arg('$apiKey', $config['anthropic']['api_key'])
+                    ->arg('$apiVersion', $config['anthropic']['api_version'])
+                ->set(GeminiClient::class)
+                    ->tag('onetomany.llmsdk.client')
                     ->arg('$httpClient', service($config['gemini']['http_client']))
                     ->arg('$denormalizer', service($config['gemini']['serializer']))
-                ->set(MockBaseClient::class)
-                    ->abstract(true)
-                ->set(OpenAiBaseClient::class)
-                    ->abstract(true)
-                    ->arg('$apiKey', $config['openai']['api_key'])
+                    ->arg('$apiKey', $config['gemini']['api_key'])
+                    ->arg('$apiVersion', $config['gemini']['api_version'])
+                ->set(MockClient::class)
+                    ->tag('onetomany.llmsdk.client')
+                ->set(OpenAiClient::class)
+                    ->tag('onetomany.llmsdk.client')
                     ->arg('$httpClient', service($config['openai']['http_client']))
                     ->arg('$denormalizer', service($config['openai']['serializer']))
+                    ->arg('$apiKey', $config['openai']['api_key'])
 
                 // Batch Actions
                 ->set(CreateBatchAction::class)
-                    ->arg('$clientFactory', service(BatchClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(CreateBatchActionInterface::class, service(CreateBatchAction::class))
                 ->set(ReadBatchAction::class)
-                    ->arg('$clientFactory', service(BatchClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(ReadBatchActionInterface::class, service(ReadBatchAction::class))
-
-                // Batch Clients
-                ->set(AnthropicBatchClient::class)
-                    ->tag('onetomany.llmsdk.client.batch')
-                    ->parent(AnthropicBaseClient::class)
-                ->set(GeminiBatchClient::class)
-                    ->tag('onetomany.llmsdk.client.batch')
-                    ->parent(GeminiBaseClient::class)
-                ->set(MockBatchClient::class)
-                    ->tag('onetomany.llmsdk.client.batch')
-                    ->parent(MockBaseClient::class)
-                ->set(OpenAiBatchClient::class)
-                    ->tag('onetomany.llmsdk.client.batch')
-                    ->parent(OpenAiBaseClient::class)
 
                 // File Actions
                 ->set(UploadFileAction::class)
-                    ->arg('$clientFactory', service(FileClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(UploadFileActionInterface::class, service(UploadFileAction::class))
                 ->set(DeleteFileAction::class)
-                    ->arg('$clientFactory', service(FileClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(DeleteFileActionInterface::class, service(DeleteFileAction::class))
-
-                // File Clients
-                ->set(AnthropicFileClient::class)
-                    ->tag('onetomany.llmsdk.client.file')
-                    ->parent(AnthropicBaseClient::class)
-                ->set(GeminiFileClient::class)
-                    ->tag('onetomany.llmsdk.client.file')
-                    ->parent(GeminiBaseClient::class)
-                ->set(MockFileClient::class)
-                    ->tag('onetomany.llmsdk.client.file')
-                    ->parent(MockBaseClient::class)
-                ->set(OpenAiFileClient::class)
-                    ->tag('onetomany.llmsdk.client.file')
-                    ->parent(OpenAiBaseClient::class)
 
                 // Query Actions
                 ->set(CompileQueryAction::class)
-                    ->arg('$clientFactory', service(QueryClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(CompileQueryActionInterface::class, service(CompileQueryAction::class))
                 ->set(ExecuteQueryAction::class)
-                    ->arg('$clientFactory', service(QueryClientFactory::class))
+                    ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(ExecuteQueryActionInterface::class, service(ExecuteQueryAction::class))
-
-                // Query Clients
-                ->set(GeminiQueryClient::class)
-                    ->tag('onetomany.llmsdk.client.query')
-                    ->parent(GeminiBaseClient::class)
-                ->set(MockQueryClient::class)
-                    ->tag('onetomany.llmsdk.client.query')
-                    ->parent(MockBaseClient::class)
-                ->set(OpenAiQueryClient::class)
-                    ->tag('onetomany.llmsdk.client.query')
-                    ->parent(OpenAiBaseClient::class)
         ;
     }
 }
