@@ -32,6 +32,8 @@ class LlmSdkBundle extends AbstractBundle
     protected string $extensionAlias = 'onetomany_llmsdk';
 
     /**
+     * @see Symfony\Component\Config\Definition\ConfigurableInterface
+     *
      * @param DefinitionConfigurator<'array'> $definition
      */
     public function configure(DefinitionConfigurator $definition): void
@@ -103,6 +105,8 @@ class LlmSdkBundle extends AbstractBundle
     }
 
     /**
+     * @see Symfony\Component\DependencyInjection\Extension\ConfigurableExtensionInterface
+     *
      * @param array{
      *   anthropic: array{
      *     api_key: non-empty-string,
