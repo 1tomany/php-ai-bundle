@@ -140,7 +140,7 @@ class LlmSdkBundle extends AbstractBundle
 
                 // Factories
                 ->set(ClientFactory::class)
-                    ->arg('$container', tagged_locator('onetomany.llmsdk.client', 'key'))
+                    ->arg('$container', tagged_locator('onetomany.llmsdk.client', 'vendor'))
 
                 // Batch Actions
                 ->set(CreateBatchAction::class)
@@ -171,21 +171,21 @@ class LlmSdkBundle extends AbstractBundle
 
                 // Clients
                 ->set(AnthropicClient::class)
-                    ->tag('onetomany.llmsdk.client', ['key' => 'anthropic'])
+                    ->tag('onetomany.llmsdk.client', ['vendor' => 'anthropic'])
                     ->arg('$httpClient', service($config['anthropic']['http_client']))
                     ->arg('$serializer', service($config['anthropic']['serializer']))
                     ->arg('$apiKey', $config['anthropic']['api_key'])
                     ->arg('$apiVersion', $config['anthropic']['api_version'])
                 ->set(GeminiClient::class)
-                    ->tag('onetomany.llmsdk.client', ['key' => 'gemini'])
+                    ->tag('onetomany.llmsdk.client', ['vendor' => 'gemini'])
                     ->arg('$httpClient', service($config['gemini']['http_client']))
                     ->arg('$serializer', service($config['gemini']['serializer']))
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                 ->set(MockClient::class)
-                    ->tag('onetomany.llmsdk.client', ['key' => 'mock'])
+                    ->tag('onetomany.llmsdk.client', ['vendor' => 'mock'])
                 ->set(OpenAiClient::class)
-                    ->tag('onetomany.llmsdk.client', ['key' => 'openai'])
+                    ->tag('onetomany.llmsdk.client', ['vendor' => 'openai'])
                     ->arg('$httpClient', service($config['openai']['http_client']))
                     ->arg('$serializer', service($config['openai']['serializer']))
                     ->arg('$apiKey', $config['openai']['api_key'])
