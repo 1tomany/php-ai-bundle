@@ -14,10 +14,7 @@ final class ListModelsCommand extends Command
     {
         foreach (Vendor::cases() as $vendor) {
             $io->section($vendor->getName());
-
-            $models = array_map(fn ($m): string => $m->getValue(), $vendor->getModels());
-
-            $io->listing($models);
+            $io->listing(array_map(fn ($m): string => $m->getValue(), $vendor->getModels()));
         }
 
         return Command::SUCCESS;
