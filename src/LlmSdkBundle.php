@@ -4,22 +4,22 @@ namespace OneToMany\LlmSdkBundle;
 
 use OneToMany\LlmSdk\Action\Batch\CreateBatchAction;
 use OneToMany\LlmSdk\Action\Batch\ReadBatchAction;
+use OneToMany\LlmSdk\Action\Embedding\CreateEmbeddingAction;
 use OneToMany\LlmSdk\Action\File\DeleteFileAction;
 use OneToMany\LlmSdk\Action\File\UploadFileAction;
+use OneToMany\LlmSdk\Action\Output\GenerateOutputAction;
 use OneToMany\LlmSdk\Action\Query\CompileQueryAction;
-use OneToMany\LlmSdk\Action\Query\EmbedContentAction;
-use OneToMany\LlmSdk\Action\Query\GenerateOutputAction;
 use OneToMany\LlmSdk\Client\Anthropic\AnthropicClient;
 use OneToMany\LlmSdk\Client\Gemini\GeminiClient;
 use OneToMany\LlmSdk\Client\Mock\MockClient;
 use OneToMany\LlmSdk\Client\OpenAi\OpenAiClient;
 use OneToMany\LlmSdk\Contract\Action\Batch\CreateBatchActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Batch\ReadBatchActionInterface;
+use OneToMany\LlmSdk\Contract\Action\Embedding\CreateEmbeddingActionInterface;
 use OneToMany\LlmSdk\Contract\Action\File\DeleteFileActionInterface;
 use OneToMany\LlmSdk\Contract\Action\File\UploadFileActionInterface;
+use OneToMany\LlmSdk\Contract\Action\Output\GenerateOutputActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Query\CompileQueryActionInterface;
-use OneToMany\LlmSdk\Contract\Action\Query\EmbedContentActionInterface;
-use OneToMany\LlmSdk\Contract\Action\Query\GenerateOutputActionInterface;
 use OneToMany\LlmSdk\Factory\ClientFactory;
 use OneToMany\LlmSdkBundle\Command\ListModelsCommand;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -162,9 +162,9 @@ class LlmSdkBundle extends AbstractBundle
                 ->set(CompileQueryAction::class)
                     ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(CompileQueryActionInterface::class, service(CompileQueryAction::class))
-                ->set(EmbedContentAction::class)
+                ->set(CreateEmbeddingAction::class)
                     ->arg('$clientFactory', service(ClientFactory::class))
-                    ->alias(EmbedContentActionInterface::class, service(EmbedContentAction::class))
+                    ->alias(CreateEmbeddingActionInterface::class, service(CreateEmbeddingAction::class))
                 ->set(GenerateOutputAction::class)
                     ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(GenerateOutputActionInterface::class, service(GenerateOutputAction::class))
