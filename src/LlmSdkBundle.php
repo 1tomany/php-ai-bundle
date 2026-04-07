@@ -9,6 +9,9 @@ use OneToMany\LlmSdk\Action\File\DeleteFileAction;
 use OneToMany\LlmSdk\Action\File\UploadFileAction;
 use OneToMany\LlmSdk\Action\Output\GenerateOutputAction;
 use OneToMany\LlmSdk\Action\Query\CompileQueryAction;
+use OneToMany\LlmSdk\Action\SearchStore\CreateSearchStoreAction;
+use OneToMany\LlmSdk\Action\SearchStore\ImportUploadedFileAction;
+use OneToMany\LlmSdk\Action\SearchStore\ReadSearchStoreAction;
 use OneToMany\LlmSdk\Client\Anthropic\AnthropicClient;
 use OneToMany\LlmSdk\Client\Gemini\GeminiClient;
 use OneToMany\LlmSdk\Client\Mock\MockClient;
@@ -20,6 +23,9 @@ use OneToMany\LlmSdk\Contract\Action\File\DeleteFileActionInterface;
 use OneToMany\LlmSdk\Contract\Action\File\UploadFileActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Output\GenerateOutputActionInterface;
 use OneToMany\LlmSdk\Contract\Action\Query\CompileQueryActionInterface;
+use OneToMany\LlmSdk\Contract\Action\SearchStore\CreateSearchStoreActionInterface;
+use OneToMany\LlmSdk\Contract\Action\SearchStore\ImportUploadedFileActionInterface;
+use OneToMany\LlmSdk\Contract\Action\SearchStore\ReadSearchStoreActionInterface;
 use OneToMany\LlmSdk\Factory\ClientFactory;
 use OneToMany\LlmSdkBundle\Command\ListModelsCommand;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
@@ -168,6 +174,17 @@ class LlmSdkBundle extends AbstractBundle
                 ->set(GenerateOutputAction::class)
                     ->arg('$clientFactory', service(ClientFactory::class))
                     ->alias(GenerateOutputActionInterface::class, service(GenerateOutputAction::class))
+
+                // Search Store Actions
+                ->set(CreateSearchStoreAction::class)
+                    ->arg('$clientFactory', service(ClientFactory::class))
+                    ->alias(CreateSearchStoreActionInterface::class, service(CreateSearchStoreAction::class))
+                ->set(ReadSearchStoreAction::class)
+                    ->arg('$clientFactory', service(ClientFactory::class))
+                    ->alias(ReadSearchStoreActionInterface::class, service(ReadSearchStoreAction::class))
+                ->set(ImportUploadedFileAction::class)
+                    ->arg('$clientFactory', service(ClientFactory::class))
+                    ->alias(ImportUploadedFileActionInterface::class, service(ImportUploadedFileAction::class))
 
                 // Clients
                 ->set(AnthropicClient::class)
