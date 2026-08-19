@@ -1,37 +1,42 @@
 {
-    "name": "1tomany/llm-sdk-bundle",
-    "description": "Symfony bundle that provides bindings for the 1tomany/llm-sdk package",
+    "name": "1tomany/ai-php-bundle",
+    "description": "Symfony bundle that provides bindings for the 1tomany/ai-php package",
     "license": "MIT",
     "type": "symfony-bundle",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.4",
-        "1tomany/llm-sdk": "^0.8.0",
-        "symfony/config": "^7.2|^8.0",
-        "symfony/console": "^7.2|^8.0",
-        "symfony/dependency-injection": "^7.2|^8.0",
-        "symfony/http-kernel": "^7.2|^8.0"
+        "php": ">=8.5",
+        "1tomany/ai-php": "dev-master",
+        "symfony/config": "^7.2|^8.0|^8.1",
+        "symfony/console": "^7.2|^8.0|^8.1",
+        "symfony/dependency-injection": "^7.2|^8.0|^8.1",
+        "symfony/http-kernel": "^7.2|^8.0|^8.1"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.93",
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^12.5"
+        "phpstan/phpstan": "^2.1.55",
+        "phpunit/phpunit": "^13.1.11"
     },
     "autoload": {
         "psr-4": {
-            "OneToMany\\LlmSdkBundle\\": "src/"
+            "OneToMany\\AI\\Bundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OneToMany\\LlmSdkBundle\\Tests\\": "tests/"
+            "OneToMany\\AI\\Bundle\\Tests\\": "tests/"
         }
     },
     "scripts": {
-        "fix": "./vendor/bin/php-cs-fixer fix",
-        "stan": "./vendor/bin/phpstan",
-        "test": "./vendor/bin/phpunit"
+        "fix": "php-cs-fixer fix",
+        "stan": "phpstan",
+        "test": "phpunit",
+        "flat": [
+            "@fix",
+            "@stan",
+            "@test"
+        ]
     },
     "authors": [
         {
