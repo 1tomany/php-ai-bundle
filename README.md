@@ -39,7 +39,6 @@ Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resource
 ```php
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
-use OneToMany\AI\Vendor;
 use OneToMany\AI\Resource\File\LocalFile;
 use OneToMany\AI\Resource\Query\Prompt;
 
