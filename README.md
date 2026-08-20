@@ -34,7 +34,7 @@ Provider blocks are optional. If a provider block is omitted, that provider is n
 
 ## Usage
 
-Inject the `OneToMany\AI\AI` facade and use its resources:
+Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resources:
 
 ```php
 use OneToMany\AI\AI;
@@ -48,22 +48,17 @@ use function sprintf;
 final readonly class AnalyzeFile
 {
     public function __construct(
-        private AI $ai,
+        private AiClientInterface $aiClient,
     ) {
     }
 
     public function __invoke(string $path): string
     {
-        $file = $this->ai->files->upload(
-            Provider::OpenAI,
-            new LocalFile($path, 'application/pdf'),
-        );
+        // Upload a file to the LLM vendor
+        $file = $this->aiClient->files->upload(Provider::OpenAI, new LocalFile($path, 'application/pdf'));
 
-        $prompt = Prompt::with('Summarize this file.', $file);
-
-        $response = $this->ai->queries->compileAndRun(
-            Model::openai('gpt-5.4'), $prompt,
-        );
+        // Run a query against the uploaded file
+        $response = $this->aiClient->queries->compileAndRun(Model::openai('gpt-5.4'), Prompt::with('Summarize this file.', $file));
 
         if (null !== $response->error) {
             throw new \RuntimeException(sprintf('Query failed: %s.', $response->error));
@@ -78,7 +73,7 @@ final readonly class AnalyzeFile
 }
 ```
 
-The `OneToMany\AI\Contract\Resource\FilesInterface` and `OneToMany\AI\Contract\Resource\QueriesInterface` interfaces are also registered as autowiring aliases to the `OneToMany\AI\Resource\Files` and `OneToMany\AI\Resource\Queries` when a service only needs one resource, though it is recommended to use the `OneToMany\AI\AI` facade.
+The `OneToMany\AI\Contract\Resource\FilesInterface` and `OneToMany\AI\Contract\Resource\QueriesInterface` interfaces are also registered as autowiring aliases to the `OneToMany\AI\Resource\Files` and `OneToMany\AI\Resource\Queries` when a service only needs one resource, though it is recommended to use the `OneToMany\AI\AiClient` facade.
 
 ## Credits
 
