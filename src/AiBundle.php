@@ -1,6 +1,6 @@
 <?php
 
-namespace OneToMany\Bundle\AIBundle;
+namespace OneToMany\Bundle\AiBundle;
 
 use OneToMany\AI\AiClient;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
