@@ -58,10 +58,6 @@ class AIBundle extends AbstractBundle
                                 ->cannotBeEmpty()
                                 ->defaultValue('http_client')
                             ->end()
-                            ->stringNode('denormalizer')
-                                ->cannotBeEmpty()
-                                ->defaultValue('serializer')
-                            ->end()
                         ->end()
                     ->end()
                     ->arrayNode('gemini')
@@ -98,7 +94,6 @@ class AIBundle extends AbstractBundle
      * @param array{
      *   transport: array{
      *     http_client: non-empty-string,
-     *     denormalizer: non-empty-string,
      *   },
      *   gemini?: array{
      *     api_key: non-empty-string,
@@ -121,7 +116,7 @@ class AIBundle extends AbstractBundle
         $services
             ->set(self::TRANSPORT_SERVICE, Transport::class)
                 ->arg('$httpClient', service($config['transport']['http_client']))
-                ->arg('$denormalizer', service($config['transport']['denormalizer']))
+                ->arg('$denormalizer', service('serializer'))
 
             ->set(self::FILES_SERVICE, Files::class)
                 ->arg('$providers', tagged_iterator(self::FILE_PROVIDER_TAG))
@@ -142,17 +137,18 @@ class AIBundle extends AbstractBundle
         if (isset($config['gemini'])) {
             $services
                 ->set(self::GEMINI_NORMALIZER_SERVICE, GeminiQueryNormalizer::class)
+                    ->tag('serializer.normalizer', ['priority' => 100])
 
                 ->set(self::GEMINI_FILE_PROVIDER_SERVICE, GeminiFileProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::GEMINI_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service('serializer'))
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
                 ->set(self::GEMINI_QUERY_PROVIDER_SERVICE, GeminiQueryProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::GEMINI_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service('serializer'))
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)
@@ -162,17 +158,18 @@ class AIBundle extends AbstractBundle
         if (isset($config['openai'])) {
             $services
                 ->set(self::OPENAI_NORMALIZER_SERVICE, OpenAIQueryNormalizer::class)
+                    ->tag('serializer.normalizer', ['priority' => 100])
 
                 ->set(self::OPENAI_FILE_PROVIDER_SERVICE, OpenAIFileProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::OPENAI_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service('serializer'))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
                 ->set(self::OPENAI_QUERY_PROVIDER_SERVICE, OpenAIQueryProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::OPENAI_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service('serializer'))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)

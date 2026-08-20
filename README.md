@@ -18,7 +18,6 @@ To change the default configuration, create a file named `onetomany_ai.yaml` in 
 onetomany_ai:
     transport:
         http_client: http_client
-        denormalizer: serializer
 
     gemini:
         api_key: "%env(GEMINI_API_KEY)%"
@@ -29,7 +28,7 @@ onetomany_ai:
         api_version: v1
 ```
 
-The transport uses Symfony's `http_client` and `serializer` services by default, so the `transport` block can normally be omitted. A custom HTTP client or denormalizer service ID can be supplied if necessary.
+The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle registers its provider-specific query normalizers with Symfony's `serializer` service and injects that serializer into the transport and providers.
 
 Provider blocks are optional. If a provider block is omitted, that provider is not registered with the `OneToMany\AI\AI` facade.
 

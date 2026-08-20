@@ -10,6 +10,7 @@
         "1tomany/php-ai": "dev-master",
         "symfony/config": "^7.2|^8.0|^8.1",
         "symfony/dependency-injection": "^7.2|^8.0|^8.1",
+        "symfony/framework-bundle": "^7.2|^8.0|^8.1",
         "symfony/http-kernel": "^7.2|^8.0|^8.1"
     },
     "require-dev": {
@@ -45,5 +46,15 @@
     ],
     "config": {
         "sort-packages": true
-    }
+    },
+    "repositories": [
+        {
+            "name": "php-ai",
+            "type": "path",
+            "url": "../php-ai",
+            "options": {
+                "symlink": true
+            }
+        }
+    ]
 }
