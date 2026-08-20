@@ -30,16 +30,16 @@ onetomany_ai:
 
 The transport uses Symfony's `http_client` service by default, so the `transport` block can normally be omitted. The bundle registers its provider-specific query normalizers with Symfony's `serializer` service and injects that serializer into the transport and providers.
 
-Provider blocks are optional. If a provider block is omitted, that provider is not registered with the `OneToMany\AI\AI` facade.
+Provider blocks are optional. If a provider block is omitted, that provider is not registered with the `OneToMany\AI\AiClient` facade.
 
 ## Usage
 
 Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resources:
 
 ```php
-use OneToMany\AI\AI;
+use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
-use OneToMany\AI\Provider;
+use OneToMany\AI\Vendor;
 use OneToMany\AI\Resource\File\LocalFile;
 use OneToMany\AI\Resource\Query\Prompt;
 
