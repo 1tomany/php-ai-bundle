@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OneToMany\\Bundle\\AIBundle\\": "src/"
+            "OneToMany\\Bundle\\AiBundle\\": "src/"
         }
     },
     "autoload-dev": {
