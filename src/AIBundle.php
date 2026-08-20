@@ -2,7 +2,7 @@
 
 namespace OneToMany\Bundle\AIBundle;
 
-use OneToMany\AI\AI;
+use OneToMany\AI\AiClient;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
 use OneToMany\AI\Bridge\Gemini\Normalizer\QueryNormalizer as GeminiQueryNormalizer;
 use OneToMany\AI\Bridge\Gemini\QueryProvider as GeminiQueryProvider;
@@ -10,6 +10,7 @@ use OneToMany\AI\Bridge\OpenAI\FileProvider as OpenAIFileProvider;
 use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryNormalizer as OpenAIQueryNormalizer;
 use OneToMany\AI\Bridge\OpenAI\QueryProvider as OpenAIQueryProvider;
 use OneToMany\AI\Bridge\Transport;
+use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Contract\Resource\FilesInterface;
 use OneToMany\AI\Contract\Resource\QueriesInterface;
 use OneToMany\AI\Resource\Files;
@@ -26,7 +27,7 @@ class AIBundle extends AbstractBundle
 {
     protected string $extensionAlias = 'onetomany_ai';
 
-    private const string AI_SERVICE = '.onetomany_ai.ai';
+    private const string AI_CLIENT_SERVICE = '.onetomany_ai.ai_client';
     private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
     private const string FILES_SERVICE = '.onetomany_ai.resource.files';
     private const string GEMINI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.file';
@@ -128,10 +129,10 @@ class AIBundle extends AbstractBundle
                 ->alias(Queries::class, service(self::QUERIES_SERVICE))
                 ->alias(QueriesInterface::class, service(self::QUERIES_SERVICE))
 
-            ->set(self::AI_SERVICE, AI::class)
+            ->set(self::AI_CLIENT_SERVICE, AiClient::class)
                 ->arg('$files', service(self::FILES_SERVICE))
                 ->arg('$queries', service(self::QUERIES_SERVICE))
-                ->alias(AI::class, service(self::AI_SERVICE))
+                ->alias(AiClientInterface::class, service(self::AI_CLIENT_SERVICE))
         ;
 
         if (isset($config['gemini'])) {
