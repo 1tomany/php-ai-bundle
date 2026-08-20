@@ -7,7 +7,7 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.5",
-        "1tomany/php-ai": "dev-master",
+        "1tomany/php-ai": "^0.0.1",
         "symfony/config": "^7.2|^8.0|^8.1",
         "symfony/dependency-injection": "^7.2|^8.0|^8.1",
         "symfony/framework-bundle": "^7.2|^8.0|^8.1",
@@ -46,15 +46,5 @@
     ],
     "config": {
         "sort-packages": true
-    },
-    "repositories": [
-        {
-            "name": "php-ai",
-            "type": "path",
-            "url": "../php-ai",
-            "options": {
-                "symlink": true
-            }
-        }
-    ]
+    }
 }
