@@ -24,6 +24,8 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_it
 
 class AIBundle extends AbstractBundle
 {
+    protected string $extensionAlias = 'onetomany_ai';
+
     private const string AI_SERVICE = '.onetomany_ai.ai';
     private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
     private const string FILES_SERVICE = '.onetomany_ai.resource.files';
@@ -36,8 +38,6 @@ class AIBundle extends AbstractBundle
     private const string QUERIES_SERVICE = '.onetomany_ai.resource.queries';
     private const string QUERY_PROVIDER_TAG = 'onetomany_ai.query_provider';
     private const string TRANSPORT_SERVICE = '.onetomany_ai.transport';
-
-    protected string $extensionAlias = 'onetomany_ai';
 
     /**
      * @see Symfony\Component\Config\Definition\ConfigurableInterface
