@@ -2,7 +2,6 @@
 
 namespace OneToMany\Bundle\AIBundle;
 
-use OneToMany\AI\AI;
 use OneToMany\AI\AiClient;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
 use OneToMany\AI\Bridge\Gemini\Normalizer\QueryNormalizer as GeminiQueryNormalizer;
