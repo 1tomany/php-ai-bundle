@@ -41,6 +41,7 @@ use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
 use OneToMany\AI\Resource\File\LocalFile;
 use OneToMany\AI\Resource\Query\Prompt;
+use OneToMany\AI\Vendor;
 
 use function sprintf;
 
@@ -55,8 +56,7 @@ final readonly class AnalyzeFile
     {
         // Upload a file to the LLM vendor
         $file = $this->aiClient->files->upload(
-            Provider::OpenAI,
-            new LocalFile($path, 'application/pdf'),
+            Vendor::OpenAI, new LocalFile($path),
         );
 
         // Run a query against the uploaded file
