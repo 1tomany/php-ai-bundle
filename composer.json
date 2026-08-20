@@ -25,7 +25,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "OneToMany\\Bundle\\AIBundle\\Tests\\": "tests/"
+            "OneToMany\\Bundle\\AiBundle\\Tests\\": "tests/"
         }
     },
     "scripts": {
