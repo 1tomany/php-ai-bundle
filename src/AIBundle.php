@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
-class AIBundle extends AbstractBundle
+class AiBundle extends AbstractBundle
 {
     protected string $extensionAlias = 'onetomany_ai';
 
