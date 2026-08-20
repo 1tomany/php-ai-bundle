@@ -1,13 +1,13 @@
 <?php
 
-namespace OneToMany\AI\Bundle;
+namespace OneToMany\Bundle\AIBundle;
 
 use OneToMany\AI\AI;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
-use OneToMany\AI\Bridge\Gemini\Normalizer\QueryRequestNormalizer as GeminiQueryRequestNormalizer;
+use OneToMany\AI\Bridge\Gemini\Normalizer\QueryNormalizer as GeminiQueryNormalizer;
 use OneToMany\AI\Bridge\Gemini\QueryProvider as GeminiQueryProvider;
 use OneToMany\AI\Bridge\OpenAI\FileProvider as OpenAIFileProvider;
-use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryRequestNormalizer as OpenAIQueryRequestNormalizer;
+use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryNormalizer as OpenAIQueryNormalizer;
 use OneToMany\AI\Bridge\OpenAI\QueryProvider as OpenAIQueryProvider;
 use OneToMany\AI\Bridge\Transport;
 use OneToMany\AI\Contract\Resource\FilesInterface;
@@ -28,10 +28,10 @@ class AIBundle extends AbstractBundle
     private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
     private const string FILES_SERVICE = '.onetomany_ai.resource.files';
     private const string GEMINI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.file';
-    private const string GEMINI_QUERY_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.gemini.query';
+    private const string GEMINI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.gemini';
     private const string GEMINI_QUERY_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.query';
     private const string OPENAI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.file';
-    private const string OPENAI_QUERY_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.openai.query';
+    private const string OPENAI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.openai';
     private const string OPENAI_QUERY_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.query';
     private const string QUERIES_SERVICE = '.onetomany_ai.resource.queries';
     private const string QUERY_PROVIDER_TAG = 'onetomany_ai.query_provider';
@@ -58,7 +58,7 @@ class AIBundle extends AbstractBundle
                                 ->cannotBeEmpty()
                                 ->defaultValue('http_client')
                             ->end()
-                            ->stringNode('serializer')
+                            ->stringNode('denormalizer')
                                 ->cannotBeEmpty()
                                 ->defaultValue('serializer')
                             ->end()
@@ -98,7 +98,7 @@ class AIBundle extends AbstractBundle
      * @param array{
      *   transport: array{
      *     http_client: non-empty-string,
-     *     serializer: non-empty-string,
+     *     denormalizer: non-empty-string,
      *   },
      *   gemini?: array{
      *     api_key: non-empty-string,
@@ -121,7 +121,7 @@ class AIBundle extends AbstractBundle
         $services
             ->set(self::TRANSPORT_SERVICE, Transport::class)
                 ->arg('$httpClient', service($config['transport']['http_client']))
-                ->arg('$serializer', service($config['transport']['serializer']))
+                ->arg('$denormalizer', service($config['transport']['denormalizer']))
 
             ->set(self::FILES_SERVICE, Files::class)
                 ->arg('$providers', tagged_iterator(self::FILE_PROVIDER_TAG))
@@ -141,17 +141,18 @@ class AIBundle extends AbstractBundle
 
         if (isset($config['gemini'])) {
             $services
-                ->set(self::GEMINI_QUERY_NORMALIZER_SERVICE, GeminiQueryRequestNormalizer::class)
+                ->set(self::GEMINI_NORMALIZER_SERVICE, GeminiQueryNormalizer::class)
 
                 ->set(self::GEMINI_FILE_PROVIDER_SERVICE, GeminiFileProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$normalizer', service(self::GEMINI_NORMALIZER_SERVICE))
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
                 ->set(self::GEMINI_QUERY_PROVIDER_SERVICE, GeminiQueryProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::GEMINI_QUERY_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service(self::GEMINI_NORMALIZER_SERVICE))
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)
@@ -160,17 +161,18 @@ class AIBundle extends AbstractBundle
 
         if (isset($config['openai'])) {
             $services
-                ->set(self::OPENAI_QUERY_NORMALIZER_SERVICE, OpenAIQueryRequestNormalizer::class)
+                ->set(self::OPENAI_NORMALIZER_SERVICE, OpenAIQueryNormalizer::class)
 
                 ->set(self::OPENAI_FILE_PROVIDER_SERVICE, OpenAIFileProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$normalizer', service(self::OPENAI_NORMALIZER_SERVICE))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
                 ->set(self::OPENAI_QUERY_PROVIDER_SERVICE, OpenAIQueryProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$normalizer', service(self::OPENAI_QUERY_NORMALIZER_SERVICE))
+                    ->arg('$normalizer', service(self::OPENAI_NORMALIZER_SERVICE))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)
