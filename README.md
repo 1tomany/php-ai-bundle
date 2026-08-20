@@ -55,10 +55,16 @@ final readonly class AnalyzeFile
     public function __invoke(string $path): string
     {
         // Upload a file to the LLM vendor
-        $file = $this->aiClient->files->upload(Provider::OpenAI, new LocalFile($path, 'application/pdf'));
+        $file = $this->aiClient->files->upload(
+            Provider::OpenAI,
+            new LocalFile($path, 'application/pdf'),
+        );
 
         // Run a query against the uploaded file
-        $response = $this->aiClient->queries->compileAndRun(Model::openai('gpt-5.4'), Prompt::with('Summarize this file.', $file));
+        $response = $this->aiClient->queries->compileAndRun(
+            Model::openai('gpt-5.4'),
+            Prompt::with('Summarize this file.', $file),
+        );
 
         if (null !== $response->error) {
             throw new \RuntimeException(sprintf('Query failed: %s.', $response->error));
