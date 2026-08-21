@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "OneToMany\\Bundle\\AiBundle\\": "src/"
+            "OneToMany\\AiBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "OneToMany\\Bundle\\AiBundle\\Tests\\": "tests/"
+            "OneToMany\\AiBundle\\Tests\\": "tests/"
         }
     },
     "scripts": {
