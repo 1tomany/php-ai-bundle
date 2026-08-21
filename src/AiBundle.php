@@ -15,6 +15,7 @@ use OneToMany\AI\Contract\Resource\FilesInterface;
 use OneToMany\AI\Contract\Resource\QueriesInterface;
 use OneToMany\AI\Resource\Files;
 use OneToMany\AI\Resource\Queries;
+use OneToMany\AI\Validator\ModelValidator;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -115,6 +116,9 @@ class AiBundle extends AbstractBundle
         $services = $container->services();
 
         $services
+            ->set(ModelValidator::class)
+                ->tag('validator.constraint_validator')
+
             ->set(self::TRANSPORT_SERVICE, Transport::class)
                 ->arg('$httpClient', service($config['transport']['http_client']))
                 ->arg('$serializer', service('serializer'))
