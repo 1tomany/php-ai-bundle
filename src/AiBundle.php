@@ -6,9 +6,9 @@ use OneToMany\AI\AiClient;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
 use OneToMany\AI\Bridge\Gemini\Normalizer\QueryNormalizer as GeminiQueryNormalizer;
 use OneToMany\AI\Bridge\Gemini\QueryProvider as GeminiQueryProvider;
-use OneToMany\AI\Bridge\OpenAI\FileProvider as OpenAIFileProvider;
-use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryNormalizer as OpenAIQueryNormalizer;
-use OneToMany\AI\Bridge\OpenAI\QueryProvider as OpenAIQueryProvider;
+use OneToMany\AI\Bridge\OpenAI\FileProvider as OpenAiFileProvider;
+use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryNormalizer as OpenAiQueryNormalizer;
+use OneToMany\AI\Bridge\OpenAI\QueryProvider as OpenAiQueryProvider;
 use OneToMany\AI\Bridge\Transport;
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Contract\Resource\FilesInterface;
@@ -162,17 +162,17 @@ class AiBundle extends AbstractBundle
 
         if (isset($config['openai'])) {
             $services
-                ->set(self::OPENAI_NORMALIZER_SERVICE, OpenAIQueryNormalizer::class)
+                ->set(self::OPENAI_NORMALIZER_SERVICE, OpenAiQueryNormalizer::class)
                     ->tag('serializer.normalizer')
 
-                ->set(self::OPENAI_FILE_PROVIDER_SERVICE, OpenAIFileProvider::class)
+                ->set(self::OPENAI_FILE_PROVIDER_SERVICE, OpenAiFileProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
                     ->arg('$serializer', service('serializer'))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
-                ->set(self::OPENAI_QUERY_PROVIDER_SERVICE, OpenAIQueryProvider::class)
+                ->set(self::OPENAI_QUERY_PROVIDER_SERVICE, OpenAiQueryProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
                     ->arg('$serializer', service('serializer'))
                     ->arg('$apiKey', $config['openai']['api_key'])
