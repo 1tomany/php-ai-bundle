@@ -37,6 +37,8 @@ Provider blocks are optional. If a provider block is omitted, that provider is n
 Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resources:
 
 ```php
+<?php
+
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
 use OneToMany\AI\Resource\File\LocalFile;
@@ -77,8 +79,6 @@ final readonly class AnalyzeFile
     }
 }
 ```
-
-The `OneToMany\AI\Contract\Resource\FilesInterface` and `OneToMany\AI\Contract\Resource\QueriesInterface` interfaces are also registered as autowiring aliases to the `OneToMany\AI\Resource\Files` and `OneToMany\AI\Resource\Queries` when a service only needs one resource, though it is recommended to use the `OneToMany\AI\AiClient` facade.
 
 ## Credits
 

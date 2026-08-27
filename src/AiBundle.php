@@ -4,17 +4,24 @@ namespace OneToMany\AiBundle;
 
 use OneToMany\AI\AiClient;
 use OneToMany\AI\Bridge\Gemini\FileProvider as GeminiFileProvider;
+use OneToMany\AI\Bridge\Gemini\Normalizer\MetadataNormalizer as GeminiMetadataNormalizer;
 use OneToMany\AI\Bridge\Gemini\Normalizer\QueryNormalizer as GeminiQueryNormalizer;
 use OneToMany\AI\Bridge\Gemini\QueryProvider as GeminiQueryProvider;
+use OneToMany\AI\Bridge\Gemini\SearchStoreProvider as GeminiSearchStoreProvider;
 use OneToMany\AI\Bridge\OpenAI\FileProvider as OpenAiFileProvider;
 use OneToMany\AI\Bridge\OpenAI\Normalizer\QueryNormalizer as OpenAiQueryNormalizer;
 use OneToMany\AI\Bridge\OpenAI\QueryProvider as OpenAiQueryProvider;
+use OneToMany\AI\Bridge\OpenAI\SearchStoreProvider as OpenAiSearchStoreProvider;
 use OneToMany\AI\Bridge\Transport;
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Contract\Resource\FilesInterface;
 use OneToMany\AI\Contract\Resource\QueriesInterface;
+use OneToMany\AI\Contract\Resource\SearchStoreFilesInterface;
+use OneToMany\AI\Contract\Resource\SearchStoresInterface;
 use OneToMany\AI\Resource\Files;
 use OneToMany\AI\Resource\Queries;
+use OneToMany\AI\Resource\SearchStoreFiles;
+use OneToMany\AI\Resource\SearchStores;
 use OneToMany\AI\Validator\ModelValidator;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,13 +39,19 @@ class AiBundle extends AbstractBundle
     private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
     private const string FILES_SERVICE = '.onetomany_ai.resource.files';
     private const string GEMINI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.file';
+    private const string GEMINI_METADATA_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.gemini.metadata';
     private const string GEMINI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.gemini';
     private const string GEMINI_QUERY_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.query';
+    private const string GEMINI_SEARCH_STORE_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.search_store';
     private const string OPENAI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.file';
     private const string OPENAI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.openai';
     private const string OPENAI_QUERY_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.query';
+    private const string OPENAI_SEARCH_STORE_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.search_store';
     private const string QUERIES_SERVICE = '.onetomany_ai.resource.queries';
     private const string QUERY_PROVIDER_TAG = 'onetomany_ai.query_provider';
+    private const string SEARCH_STORE_FILES_SERVICE = '.onetomany_ai.resource.search_store_files';
+    private const string SEARCH_STORE_PROVIDER_TAG = 'onetomany_ai.search_store_provider';
+    private const string SEARCH_STORES_SERVICE = '.onetomany_ai.resource.search_stores';
     private const string TRANSPORT_SERVICE = '.onetomany_ai.transport';
 
     /**
@@ -133,14 +146,29 @@ class AiBundle extends AbstractBundle
                 ->alias(Queries::class, service(self::QUERIES_SERVICE))
                 ->alias(QueriesInterface::class, service(self::QUERIES_SERVICE))
 
+            ->set(self::SEARCH_STORE_FILES_SERVICE, SearchStoreFiles::class)
+                ->arg('$providers', tagged_iterator(self::SEARCH_STORE_PROVIDER_TAG))
+                ->alias(SearchStoreFiles::class, service(self::SEARCH_STORE_FILES_SERVICE))
+                ->alias(SearchStoreFilesInterface::class, service(self::SEARCH_STORE_FILES_SERVICE))
+
+            ->set(self::SEARCH_STORES_SERVICE, SearchStores::class)
+                ->arg('$providers', tagged_iterator(self::SEARCH_STORE_PROVIDER_TAG))
+                ->arg('$files', service(self::SEARCH_STORE_FILES_SERVICE))
+                ->alias(SearchStores::class, service(self::SEARCH_STORES_SERVICE))
+                ->alias(SearchStoresInterface::class, service(self::SEARCH_STORES_SERVICE))
+
             ->set(self::AI_CLIENT_SERVICE, AiClient::class)
                 ->arg('$files', service(self::FILES_SERVICE))
                 ->arg('$queries', service(self::QUERIES_SERVICE))
+                ->arg('$searchStores', service(self::SEARCH_STORES_SERVICE))
                 ->alias(AiClientInterface::class, service(self::AI_CLIENT_SERVICE))
         ;
 
         if (isset($config['gemini'])) {
             $services
+                ->set(self::GEMINI_METADATA_NORMALIZER_SERVICE, GeminiMetadataNormalizer::class)
+                    ->tag('serializer.normalizer')
+
                 ->set(self::GEMINI_NORMALIZER_SERVICE, GeminiQueryNormalizer::class)
                     ->tag('serializer.normalizer')
 
@@ -157,6 +185,13 @@ class AiBundle extends AbstractBundle
                     ->arg('$apiKey', $config['gemini']['api_key'])
                     ->arg('$apiVersion', $config['gemini']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)
+
+                ->set(self::GEMINI_SEARCH_STORE_PROVIDER_SERVICE, GeminiSearchStoreProvider::class)
+                    ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$serializer', service('serializer'))
+                    ->arg('$apiKey', $config['gemini']['api_key'])
+                    ->arg('$apiVersion', $config['gemini']['api_version'])
+                    ->tag(self::SEARCH_STORE_PROVIDER_TAG)
             ;
         }
 
@@ -178,6 +213,13 @@ class AiBundle extends AbstractBundle
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::QUERY_PROVIDER_TAG)
+
+                ->set(self::OPENAI_SEARCH_STORE_PROVIDER_SERVICE, OpenAiSearchStoreProvider::class)
+                    ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$serializer', service('serializer'))
+                    ->arg('$apiKey', $config['openai']['api_key'])
+                    ->arg('$apiVersion', $config['openai']['api_version'])
+                    ->tag(self::SEARCH_STORE_PROVIDER_TAG)
             ;
         }
     }
