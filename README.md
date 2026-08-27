@@ -78,7 +78,14 @@ final readonly class AnalyzeFile
 }
 ```
 
-The `OneToMany\AI\Contract\Resource\FilesInterface` and `OneToMany\AI\Contract\Resource\QueriesInterface` interfaces are also registered as autowiring aliases to the `OneToMany\AI\Resource\Files` and `OneToMany\AI\Resource\Queries` when a service only needs one resource, though it is recommended to use the `OneToMany\AI\AiClient` facade.
+The resource interfaces are also registered as autowiring aliases to their concrete facades when a service only needs one resource:
+
+- `OneToMany\AI\Contract\Resource\FilesInterface`
+- `OneToMany\AI\Contract\Resource\QueriesInterface`
+- `OneToMany\AI\Contract\Resource\SearchStoresInterface`
+- `OneToMany\AI\Contract\Resource\SearchStoreFilesInterface`
+
+For access to multiple resources, prefer the `OneToMany\AI\Contract\AiClientInterface` facade.
 
 ## Credits
 
