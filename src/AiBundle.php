@@ -35,25 +35,21 @@ class AiBundle extends AbstractBundle
     protected string $extensionAlias = 'onetomany_ai';
 
     private const string AI_CLIENT_SERVICE = '.onetomany_ai.ai_client';
+    private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
     private const string INDEX_PROVIDER_TAG = 'onetomany_ai.index_provider';
     private const string PROMPT_PROVIDER_TAG = 'onetomany_ai.prompt_provider';
-    private const string FILE_PROVIDER_TAG = 'onetomany_ai.file_provider';
-
     private const string FILES_SERVICE = '.onetomany_ai.resource.files';
     private const string INDEXES_SERVICE = '.onetomany_ai.resource.indexes';
     private const string INDEX_FILES_SERVICE = '.onetomany_ai.resource.index_files';
     private const string PROMPTS_SERVICE = '.onetomany_ai.resource.prompts';
-
     private const string GEMINI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.gemini';
     private const string GEMINI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.file';
     private const string GEMINI_INDEX_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.index';
     private const string GEMINI_PROMPT_PROVIDER_SERVICE = '.onetomany_ai.provider.gemini.prompt';
-
     private const string OPENAI_NORMALIZER_SERVICE = '.onetomany_ai.normalizer.openai';
     private const string OPENAI_FILE_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.file';
     private const string OPENAI_INDEX_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.index';
     private const string OPENAI_PROMPT_PROVIDER_SERVICE = '.onetomany_ai.provider.openai.prompt';
-
     private const string TRANSPORT_SERVICE = '.onetomany_ai.transport';
 
     /**
