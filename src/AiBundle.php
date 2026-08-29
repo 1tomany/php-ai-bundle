@@ -60,8 +60,9 @@ class AiBundle extends AbstractBundle
      * @param DefinitionConfigurator<'array'> $definition
      */
     #[\Override]
-    public function configure(DefinitionConfigurator $definition): void
-    {
+    public function configure(
+        DefinitionConfigurator $definition,
+    ): void {
         $definition
             ->rootNode()
                 ->addDefaultsIfNotSet()
