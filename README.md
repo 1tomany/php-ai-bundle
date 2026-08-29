@@ -42,7 +42,8 @@ Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resource
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
 use OneToMany\AI\Resource\File\LocalFile;
-use OneToMany\AI\Resource\Query\Prompt;
+use OneToMany\AI\Resource\Prompt\InputFile;
+use OneToMany\AI\Resource\Prompt\Prompt;
 use OneToMany\AI\Vendor;
 
 use function sprintf;
@@ -57,25 +58,38 @@ final readonly class AnalyzeFile
     public function __invoke(string $path): string
     {
         // Upload a file to the LLM vendor
-        $file = $this->aiClient->files->upload(
-            Vendor::OpenAI, new LocalFile($path),
+        $localFile = new LocalFile($path);
+
+        $remoteFile = $this->aiClient->files->upload(
+            vendor: Vendor::OpenAI,
+            file: $localFile,
         );
 
-        // Run a query against the uploaded file
-        $response = $this->aiClient->queries->compileAndRun(
-            Model::openai('gpt-5.4'),
-            Prompt::with('Summarize this file.', $file),
+        $prompt = Prompt::create(
+            'gpt-5.4',
+            'Summarize this file.',
+            new InputFile(
+                $remoteFile->getId(),
+                $localFile->getType(),
+            ),
         );
 
-        if (null !== $response->error) {
-            throw new \RuntimeException(sprintf('Query failed: %s.', $response->error));
+        // Compile a prompt into a query and send it
+        $response = $this->aiClient->prompts->send($prompt);
+
+        if (null !== $response->getError()) {
+            throw new \RuntimeException(sprintf('Error: %s.', $response->getError()));
         }
 
-        if (null === $response->text) {
+        if (null !== $response->getRefusal()) {
+            throw new \RuntimeException(sprintf('Refusal: %s.', $response->getRefusal()));
+        }
+
+        if (null === $response->getText()) {
             throw new \RuntimeException('Query failed to generate output.');
         }
 
-        return $response->text;
+        return $response->getText();
     }
 }
 ```
