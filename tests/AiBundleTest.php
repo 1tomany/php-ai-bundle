@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 #[Group('UnitTests')]
 final class AiBundleTest extends TestCase
 {
-    public function testExtensionAlias(): void
+    public function testGettingExtensionAlias(): void
     {
         $this->assertSame('onetomany_ai', new AiBundle()->getContainerExtension()?->getAlias());
     }
