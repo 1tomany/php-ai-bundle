@@ -140,11 +140,6 @@ class AiBundle extends AbstractBundle
                 ->alias(Files::class, service(self::FILES_SERVICE))
                 ->alias(FilesInterface::class, service(self::FILES_SERVICE))
 
-            ->set(self::PROMPTS_SERVICE, Prompts::class)
-                ->arg('$providers', tagged_iterator(self::PROMPT_PROVIDER_TAG))
-                ->alias(Prompts::class, service(self::PROMPTS_SERVICE))
-                ->alias(PromptsInterface::class, service(self::PROMPTS_SERVICE))
-
             ->set(self::INDEX_FILES_SERVICE, IndexFiles::class)
                 ->arg('$providers', tagged_iterator(self::INDEX_PROVIDER_TAG))
                 ->alias(IndexFiles::class, service(self::INDEX_FILES_SERVICE))
@@ -156,10 +151,15 @@ class AiBundle extends AbstractBundle
                 ->alias(Indexes::class, service(self::INDEXES_SERVICE))
                 ->alias(IndexesInterface::class, service(self::INDEXES_SERVICE))
 
+            ->set(self::PROMPTS_SERVICE, Prompts::class)
+                ->arg('$providers', tagged_iterator(self::PROMPT_PROVIDER_TAG))
+                ->alias(Prompts::class, service(self::PROMPTS_SERVICE))
+                ->alias(PromptsInterface::class, service(self::PROMPTS_SERVICE))
+
             ->set(self::AI_CLIENT_SERVICE, AiClient::class)
                 ->arg('$files', service(self::FILES_SERVICE))
-                ->arg('$queries', service(self::PROMPTS_SERVICE))
-                ->arg('$searchStores', service(self::INDEXES_SERVICE))
+                ->arg('$indexes', service(self::INDEXES_SERVICE))
+                ->arg('$prompts', service(self::PROMPTS_SERVICE))
                 ->alias(AiClientInterface::class, service(self::AI_CLIENT_SERVICE))
         ;
 
@@ -203,19 +203,19 @@ class AiBundle extends AbstractBundle
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::FILE_PROVIDER_TAG)
 
-                ->set(self::OPENAI_PROMPT_PROVIDER_SERVICE, OpenAiPromptProvider::class)
-                    ->arg('$transport', service(self::TRANSPORT_SERVICE))
-                    ->arg('$serializer', service('serializer'))
-                    ->arg('$apiKey', $config['openai']['api_key'])
-                    ->arg('$apiVersion', $config['openai']['api_version'])
-                    ->tag(self::PROMPT_PROVIDER_TAG)
-
                 ->set(self::OPENAI_INDEX_PROVIDER_SERVICE, OpenAiIndexProvider::class)
                     ->arg('$transport', service(self::TRANSPORT_SERVICE))
                     ->arg('$serializer', service('serializer'))
                     ->arg('$apiKey', $config['openai']['api_key'])
                     ->arg('$apiVersion', $config['openai']['api_version'])
                     ->tag(self::INDEX_PROVIDER_TAG)
+
+                ->set(self::OPENAI_PROMPT_PROVIDER_SERVICE, OpenAiPromptProvider::class)
+                    ->arg('$transport', service(self::TRANSPORT_SERVICE))
+                    ->arg('$serializer', service('serializer'))
+                    ->arg('$apiKey', $config['openai']['api_key'])
+                    ->arg('$apiVersion', $config['openai']['api_version'])
+                    ->tag(self::PROMPT_PROVIDER_TAG)
             ;
         }
     }
