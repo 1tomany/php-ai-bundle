@@ -21,7 +21,8 @@ use OneToMany\AI\Resource\Files;
 use OneToMany\AI\Resource\Indexes;
 use OneToMany\AI\Resource\IndexFiles;
 use OneToMany\AI\Resource\Prompts;
-use OneToMany\AI\Validator\ModelValidator;
+use OneToMany\AI\Validator\ModelNameValidator;
+use OneToMany\AI\Validator\ModelVendorNameValidator;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -128,7 +129,9 @@ class AiBundle extends AbstractBundle
         $services = $container->services();
 
         $services
-            ->set(ModelValidator::class)
+            ->set(ModelNameValidator::class)
+                ->tag('validator.constraint_validator')
+            ->set(ModelVendorNameValidator::class)
                 ->tag('validator.constraint_validator')
 
             ->set(self::TRANSPORT_SERVICE, Transport::class)
