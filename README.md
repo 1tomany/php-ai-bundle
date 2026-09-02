@@ -41,10 +41,10 @@ Inject the `OneToMany\AI\Contract\AiClientInterface` facade and use its resource
 
 use OneToMany\AI\Contract\AiClientInterface;
 use OneToMany\AI\Model;
+use OneToMany\AI\ModelVendor;
 use OneToMany\AI\Resource\File\LocalFile;
 use OneToMany\AI\Resource\Prompt\InputFile;
 use OneToMany\AI\Resource\Prompt\Prompt;
-use OneToMany\AI\Vendor;
 
 use function sprintf;
 
@@ -61,12 +61,11 @@ final readonly class AnalyzeFile
         $localFile = new LocalFile($path);
 
         $remoteFile = $this->aiClient->files->upload(
-            vendor: Vendor::OpenAI,
-            file: $localFile,
+            ModelVendor::OpenAI, $localFile,
         );
 
         $prompt = Prompt::create(
-            'gpt-5.4',
+            'openai:gpt-5.4',
             'Summarize this file.',
             new InputFile(
                 $remoteFile->getId(),
